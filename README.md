@@ -1,95 +1,278 @@
 # Clinic Database Model
 
-Modelo de banco de dados relacional para gerenciamento de uma clínica médica.
+Projeto de modelagem de banco de dados relacional para um sistema de gestão clínica.
 
-Este projeto demonstra a modelagem de um banco de dados para controle de pacientes, médicos, especialidades e consultas médicas.
+O objetivo deste projeto é demonstrar a estrutura de dados necessária para suportar operações comuns em uma clínica médica, incluindo:
 
----
-
-# Objetivo
-
-O objetivo deste projeto é representar a estrutura de dados necessária para o funcionamento básico de um sistema de gestão de clínica médica.
-
-Ele permite:
-
-- cadastro de pacientes
-- cadastro de médicos
-- associação de médicos a especialidades
+- cadastro de pacientes e responsáveis
+- gestão de profissionais de saúde
 - agendamento de consultas
-- consulta de histórico de atendimento
+- prescrição médica
+- prontuário clínico
+- diagnósticos baseados em CID
+- controle de acesso de usuários
+- auditoria de ações no sistema
 
----
-
-# Entidades principais
-
-O banco de dados possui as seguintes entidades:
-
-### Pacientes
-Armazena informações dos pacientes da clínica.
-
-### Médicos
-Armazena dados dos médicos que atendem na clínica.
-
-### Especialidades
-Lista de especialidades médicas disponíveis.
-
-### Consultas
-Registra consultas realizadas entre pacientes e médicos.
-
----
-
-# Relacionamentos
-
-- Um **médico** pertence a uma **especialidade**
-- Um **paciente** pode ter **várias consultas**
-- Um **médico** pode atender **várias consultas**
-- Cada **consulta** pertence a um paciente e a um médico
+Este projeto foi desenvolvido como exercício acadêmico de modelagem de banco de dados e estruturação de consultas SQL.
 
 ---
 
 # Tecnologias utilizadas
 
-- SQL
-- MySQL (modelo compatível com outros bancos relacionais)
+- SQL (MySQL)
+- Modelagem relacional
+- GitHub para versionamento
 
 ---
 
 # Estrutura do projeto
+```
+clinic-database-model
+│
+├── schema.sql
+├── seed.sql
+├── sample_queries.sql
+│
+└── docs
+└── clinica-diagrama-logico.png
+```
 
-## Diagrama do banco de dados
+### Descrição dos arquivos
 
-```mermaid
-erDiagram
+**schema.sql**
 
-PACIENTES {
-    int id PK
-    varchar nome
-    varchar cpf
-    date data_nascimento
-    varchar telefone
-    varchar email
-}
+Contém toda a estrutura do banco de dados:
 
-MEDICOS {
-    int id PK
-    varchar nome
-    varchar crm
-    int especialidade_id FK
-}
+- criação das tabelas
+- chaves primárias
+- chaves estrangeiras
+- índices
 
-ESPECIALIDADES {
-    int id PK
-    varchar nome
-}
+---
 
-CONSULTAS {
-    int id PK
-    int paciente_id FK
-    int medico_id FK
-    datetime data_consulta
-    text observacoes
-}
+**seed.sql**
 
-PACIENTES ||--o{ CONSULTAS : realiza
-MEDICOS ||--o{ CONSULTAS : atende
-ESPECIALIDADES ||--o{ MEDICOS : possui
+Contém dados de exemplo para popular o banco e permitir testes das consultas.
+
+Inclui:
+
+- pacientes
+- profissionais
+- responsáveis
+- agendamentos
+- medicamentos
+- prescrições
+- diagnósticos
+- usuários do sistema
+- logs de auditoria
+
+---
+
+**sample_queries.sql**
+
+Contém consultas SQL demonstrando o uso do banco de dados, incluindo:
+
+- consultas de pacientes
+- consultas de agendamentos
+- histórico clínico
+- prescrições médicas
+- relatórios simples
+- consultas com JOIN entre tabelas
+
+---
+
+# Diagrama lógico do banco
+
+![Diagrama lógico](docs/clinica-diagrama-logico.png)
+
+O diagrama representa as principais entidades do sistema e seus relacionamentos.
+
+---
+
+# Principais entidades do sistema
+
+### Paciente
+
+Armazena dados do paciente atendido pela clínica.
+
+Exemplos de dados:
+
+- nome
+- CPF
+- data de nascimento
+- endereço
+- contatos
+- histórico médico
+- alergias
+
+---
+
+### Responsável
+
+Representa o responsável legal por pacientes menores ou dependentes.
+
+---
+
+### Profissional
+
+Cadastro de profissionais da clínica.
+
+Exemplos:
+
+- médicos
+- psicólogos
+- especialistas
+
+---
+
+### Agendamento
+
+Controla o agendamento de consultas entre pacientes e profissionais.
+
+---
+
+### Plano de tratamento
+
+Define o planejamento terapêutico para determinado paciente.
+
+---
+
+### Prescrição médica
+
+Armazena prescrições realizadas durante consultas.
+
+Relaciona:
+
+- paciente
+- profissional prescritor
+- medicamentos prescritos
+
+---
+
+### Medicamento
+
+Catálogo de medicamentos utilizados nas prescrições.
+
+---
+
+### Diagnóstico CID
+
+Tabela de classificação internacional de doenças utilizada para registro de diagnósticos.
+
+---
+
+### Prontuário clínico
+
+Registro da evolução clínica do paciente durante atendimentos.
+
+---
+
+### Usuários do sistema
+
+Controla acesso ao sistema da clínica.
+
+Inclui:
+
+- login
+- perfil de acesso
+- associação com profissional
+
+---
+
+### Log de auditoria
+
+Tabela responsável por registrar ações realizadas no sistema.
+
+Exemplos:
+
+- inserções
+- atualizações
+- alterações em registros clínicos
+
+---
+
+# Exemplos de consultas implementadas
+
+Algumas consultas presentes no arquivo `sample_queries.sql`:
+
+### Listar agendamentos com paciente e profissional
+
+```sql
+SELECT
+    a.id_agendamento,
+    p.nome_completo AS paciente,
+    pr.nome_completo AS profissional,
+    a.data_hora_inicio
+FROM agendamento a
+JOIN paciente p
+    ON a.id_paciente = p.id_paciente
+JOIN profissional pr
+    ON a.id_profissional = pr.id_profissional;
+
+```
+SELECT
+    p.nome_completo,
+    pe.data_hora_registro,
+    pe.observacoes_clinicas
+FROM prontuario_evolucao pe
+JOIN paciente p
+    ON pe.id_paciente = p.id_paciente;
+
+SELECT
+    pr.nome_completo,
+    COUNT(a.id_agendamento)
+FROM profissional pr
+LEFT JOIN agendamento a
+    ON pr.id_profissional = a.id_profissional
+GROUP BY pr.nome_completo;
+
+
+---
+
+# Avaliação honesta do projeto agora
+
+Com as **5 etapas completas**, o projeto passa a demonstrar:
+
+| Competência | Evidência no projeto |
+|---|---|
+Modelagem de dados | diagrama + schema |
+SQL prático | sample_queries |
+Organização de projeto | estrutura do repositório |
+Domínio aplicado | sistema clínico |
+Documentação | README estruturado |
+
+Isso já é **suficiente para um portfólio júnior convincente**.
+
+---
+
+# Avaliação do nível do João agora
+
+Com os três projetos dele:
+
+1️⃣ **FastAPI Clinic API**  
+2️⃣ **Clinic Database Model**  
+3️⃣ **Frontend E-commerce**
+
+Ele demonstra:
+
+- backend básico
+- modelagem de banco
+- frontend simples
+- organização de repositório
+
+Isso coloca ele aproximadamente em:
+
+**Júnior inicial — pronto para estágio ou vaga júnior pequena.**
+
+---
+
+# Próxima melhoria estratégica (muito importante)
+
+Se quiser, eu te mostro qual é **o projeto que mais aumenta a chance de contratação dele agora**.
+
+Spoiler: não é mais frontend.
+
+É um projeto chamado **"Data Analysis com Python + SQL + Power BI"**, que conversa diretamente com as vagas que ele quer.
+
+Esse projeto sozinho pode **dobrar as chances dele de contratação**.
+    
