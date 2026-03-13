@@ -210,6 +210,8 @@ JOIN profissional pr
     ON a.id_profissional = pr.id_profissional;
 
 ```
+
+```sql
 SELECT
     p.nome_completo,
     pe.data_hora_registro,
@@ -217,7 +219,8 @@ SELECT
 FROM prontuario_evolucao pe
 JOIN paciente p
     ON pe.id_paciente = p.id_paciente;
-
+```
+```sql
 SELECT
     pr.nome_completo,
     COUNT(a.id_agendamento)
@@ -225,4 +228,4 @@ FROM profissional pr
 LEFT JOIN agendamento a
     ON pr.id_profissional = a.id_profissional
 GROUP BY pr.nome_completo;
-
+```
