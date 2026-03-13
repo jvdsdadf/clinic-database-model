@@ -55,3 +55,41 @@ Registra consultas realizadas entre pacientes e médicos.
 ---
 
 # Estrutura do projeto
+
+## Diagrama do banco de dados
+
+```mermaid
+erDiagram
+
+PACIENTES {
+    int id PK
+    varchar nome
+    varchar cpf
+    date data_nascimento
+    varchar telefone
+    varchar email
+}
+
+MEDICOS {
+    int id PK
+    varchar nome
+    varchar crm
+    int especialidade_id FK
+}
+
+ESPECIALIDADES {
+    int id PK
+    varchar nome
+}
+
+CONSULTAS {
+    int id PK
+    int paciente_id FK
+    int medico_id FK
+    datetime data_consulta
+    text observacoes
+}
+
+PACIENTES ||--o{ CONSULTAS : realiza
+MEDICOS ||--o{ CONSULTAS : atende
+ESPECIALIDADES ||--o{ MEDICOS : possui
